@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
     try {
-      await mongoose.connect(process.env.localDB);
+      await mongoose.connect(process.env.remoteDB);
       console.log('DB connection established');
     } catch (error) {
       console.log('Error connecting', error.message);
