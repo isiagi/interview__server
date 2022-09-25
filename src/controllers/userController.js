@@ -54,7 +54,7 @@ const userController = {
       await user.save();
 
       //create reset url url
-      const resetUrl = `http://localhost:5000/passwordreset/${resetToken}`;
+      const resetUrl = `http://localhost:5173/passwordreset/${resetToken}`;
 
       //html message: "Reset token"
       const message = `
@@ -96,22 +96,22 @@ const userController = {
         resetPasswordExpire: { $gt: Date.now() },
       });
 
-      if(!user) {
-        return res.status(400).json({error: 'user does not exist'})
+      if (!user) {
+        return res.status(400).json({ error: "user does not exist" });
       }
-      user.password = req.body.password
+      user.password = req.body.password;
       user.resetPasswordExpire = undefined;
       user.passwordResetToken = undefined;
 
-      await user.save()
+      await user.save();
 
       res.status(201).json({
         suceess: true,
         data: "Password Updated Success",
-        token: await user.getSignedJwtToken()
-      })
+        token: await user.getSignedJwtToken(),
+      });
     } catch (error) {
-        return res.status(500).json({error: error.message})
+      return res.status(500).json({ error: error.message });
     }
   },
 };
@@ -119,15 +119,16 @@ const userController = {
 const signToken = async function (res, status, user) {
   const token = await user.getSignedJwtToken();
 
+  var date = new Date();
   const cookieOptions = {
-    maxAge: 1 * 60 * 60 * 1000,
+    maxAge: date.setTime(date.getTime() + 5 * 60 * 1000),
     httpOnly: true,
   };
 
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; // only for SSL in production
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true; // only for SSL in production
 
-  await res.cookie('jwt', token, cookieOptions);
-  
+  await res.cookie("jwt", token, cookieOptions);
+
   return res.status(status).json({ message: "success", token });
 };
 
